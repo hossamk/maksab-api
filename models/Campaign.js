@@ -28,7 +28,7 @@ const CampaignSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    defaults: Date.now,
+    default: Date.now,
   },
   slug: String,
 });
