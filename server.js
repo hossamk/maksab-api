@@ -1,5 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const morgan = require('morgan');
+
 const {CAMPAIGNS_ROUTE} = require('./constants');
 // Route files
 const campaigns = require('./routes/campaigns');
@@ -8,6 +10,11 @@ const campaigns = require('./routes/campaigns');
 dotenv.config({path: './config/config.env'});
 
 const app = express();
+
+// middleware
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 // Mount routes
 app.use(CAMPAIGNS_ROUTE, campaigns);
