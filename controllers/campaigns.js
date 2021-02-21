@@ -37,7 +37,7 @@ exports.getCampaigns = async (req, res, next) => {
 };
 
 // @desc    Get a campaign by id
-// @route   GET /api/v1/campaign/:id
+// @route   GET /api/v1/campaigns/:id
 // @access  Public
 exports.getCampaign = async (req, res, next) => {
   try {
@@ -56,4 +56,26 @@ exports.getCampaign = async (req, res, next) => {
       success: false,
     });
   }
+};
+
+// @desc    Update a campaign with id
+// @route   PUT /api/v1/campaigns/:id
+// @access  Public
+exports.updateCampaign = async (req, res, next) => {
+  try {
+    const campaign = await Campaign.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidator: true
+    });
+    
+    if(!campaign) {
+      return res.status(404).json({success: false});
+    }
+
+    res.status(200).json({succes: true, data: campaign});
+  } catch {
+    res.status(400).json({
+      success: false,
+    });
+  }   
 };

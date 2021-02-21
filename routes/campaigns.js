@@ -1,9 +1,9 @@
 const express = require('express');
-const {getCampaigns, createCampaign, getCampaign} = require('../controllers/campaigns');
+const {getCampaigns, createCampaign, getCampaign, updateCampaign} = require('../controllers/campaigns');
 
 const router = express.Router();
 
 router.route('/').get(getCampaigns).post(createCampaign);
-router.route('/:id').get(getCampaign);
+router.route('/:id').get(getCampaign).put(updateCampaign);
 
 module.exports = router;
