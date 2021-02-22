@@ -1,0 +1,22 @@
+[
+    {
+        "photo": "no-photo.jpg",
+        "_id": "603190d3a08aa76a99382abd",
+        "title": "iPhonesp",
+        "description": "Win a free iPhone",
+        "numberOfWinners": 1,
+        "completionDate": "2021-02-21T01:09:25.368Z",
+        "createdAt": "2021-02-20T22:44:35.584Z",
+        "__v": 0
+    },
+    {
+        "photo": "no-photo.jpg",
+        "_id": "60319171a08aa76a99382abe",
+        "title": "BMW Z4",
+        "description": "A free BMW Z4",
+        "numberOfWinners": 1,
+        "completionDate": "2021-02-21T01:09:25.368Z",
+        "createdAt": "2021-02-20T22:47:13.994Z",
+        "__v": 0
+    }
+]
