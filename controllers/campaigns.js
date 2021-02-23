@@ -18,7 +18,21 @@ exports.createCampaign = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/campaigns
 // @access  Public
 exports.getCampaigns = asyncHandler(async (req, res, next) => {
-  const campaigns = await Campaign.find();
+  let query = {};
+
+  // Filter campigns based on date
+  if (req.query.active === 'true') {
+    query.completionDate = { $gte: Date.now() };
+  } else if (req.query.active === 'false') {
+    query.completionDate = { $lt: Date.now() };
+  }
+
+  // Filter campaigns based on country
+  if (req.query.country) {
+    query.country = req.query.country.toUpperCase();
+  }
+
+  const campaigns = await Campaign.find(query).sort('-createdAt');
 
   res.status(200).json({
     success: true,

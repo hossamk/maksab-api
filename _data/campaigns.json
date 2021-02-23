@@ -4,6 +4,7 @@
         "_id": "603190d3a08aa76a99382abd",
         "title": "iPhone",
         "description": "Win a free iPhone",
+        "country": "EGYPT",
         "numberOfWinners": 1,
         "completionDate": "2021-02-21T01:09:25.368Z",
         "createdAt": "2021-02-20T22:44:35.584Z",
@@ -14,8 +15,9 @@
         "_id": "60319171a08aa76a99382abe",
         "title": "BMW Z4",
         "description": "A free BMW Z4",
+        "country": "EGYPT",
         "numberOfWinners": 1,
-        "completionDate": "2021-02-21T01:09:25.368Z",
+        "completionDate": "2022-02-21T01:09:25.368Z",
         "createdAt": "2021-02-20T22:47:13.994Z",
         "__v": 0
     }

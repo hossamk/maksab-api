@@ -13,6 +13,12 @@ const CampaignSchema = mongoose.Schema({
     trim: true,
     maxlength: [500, 'Title can not be more than 500 characters'],
   },
+  country: {
+    type: String,
+    enum: ['EGYPT'],
+    required: [true, 'Country is required'],
+    default: 'EGYPT',
+  },
   numberOfWinners: {
     type: Number,
     required: [true, 'Number of winners is required'],
