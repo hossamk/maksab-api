@@ -1,6 +1,7 @@
 const asyncHandler = require('../middleware/async');
 const Campaign = require('../models/Campaign');
 const ErrorResponse = require('../utils/errorResponse');
+const path = require('path');
 
 // @desc    Create a campaign
 // @route   POST /api/v1/campaigns
@@ -103,4 +104,52 @@ exports.updateCampaign = asyncHandler(async (req, res, next) => {
   }
 
   res.status(200).json({ succes: true, data: campaign });
+});
+
+// @desc    Upload photo for a campaigns
+// @route   PUT /api/v1/campaigns/:id/photo
+// @access  Private
+exports.campaignPhotoUpload = asyncHandler(async (req, res, next) => {
+  const campaign = await Campaign.findById(req.params.id);
+
+  if (!campaign) {
+    return next(
+      new ErrorResponse(`Campaign not found with id: ${req.params.id}`, 404)
+    );
+  }
+
+  if (!req.files) {
+    return next(new ErrorResponse('Please upload a file', 400));
+  }
+
+  const file = req.files.file;
+
+  // Make sure the file is an image
+  if (!file.mimetype.startsWith('image')) {
+    return next(new ErrorResponse(`Please upload an image file`, 400));
+  }
+
+  // Check file size
+  if (file.size > process.env.MAX_FILE_UPLOAD_SIZE) {
+    return next(
+      new ErrorResponse(
+        `Please upload an image file less than ${process.env.MAX_FILE_UPLOAD_SIZE}`,
+        400
+      )
+    );
+  }
+
+  // Create custome file name
+  file.name = `photo_${campaign._id}${path.parse(file.name).ext}`;
+
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+    if (err) {
+      console.error(err);
+      return next(new ErrorResponse(`Upload file failed`, 500));
+    }
+
+    await Campaign.findByIdAndUpdate(req.params.id, { photo: file.name });
+
+    res.status(200).json({ succes: true, data: file.name });
+  });
 });
