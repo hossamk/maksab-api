@@ -3,12 +3,13 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const fileupload = require('express-fileupload');
 const path = require('path');
-const { CAMPAIGNS_ROUTE } = require('./constants');
+const { CAMPAIGNS_ROUTE, AUTH_ROUTE } = require('./constants');
 const connectDB = require('./config/db');
 const colors = require('colors');
 const errorHandler = require('./middleware/error');
 // Route files
 const campaigns = require('./routes/campaigns');
+const auth = require('./routes/auth');
 
 // Load env variables
 dotenv.config({ path: './config/config.env' });
@@ -34,6 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Mount routes
 app.use(CAMPAIGNS_ROUTE, campaigns);
+app.use(AUTH_ROUTE, auth);
 
 // Middleware
 app.use(errorHandler);
