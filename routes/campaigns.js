@@ -9,8 +9,10 @@ const {
 
 const router = express.Router();
 
-router.route('/').get(getCampaigns).post(createCampaign);
-router.route('/:id').get(getCampaign).put(updateCampaign);
-router.route('/:id/photo').put(campaignPhotoUpload);
+const { protect } = require('../middleware/auth');
+
+router.route('/').get(getCampaigns).post(protect, createCampaign);
+router.route('/:id').get(getCampaign).put(protect, updateCampaign);
+router.route('/:id/photo').put(protect, campaignPhotoUpload);
 
 module.exports = router;
