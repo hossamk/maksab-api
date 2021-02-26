@@ -3,9 +3,10 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const fileupload = require('express-fileupload');
 const path = require('path');
+const colors = require('colors');
+const cookieParser = require('cookie-parser');
 const { CAMPAIGNS_ROUTE, AUTH_ROUTE } = require('./constants');
 const connectDB = require('./config/db');
-const colors = require('colors');
 const errorHandler = require('./middleware/error');
 // Route files
 const campaigns = require('./routes/campaigns');
@@ -21,6 +22,9 @@ const app = express();
 
 //Body parser
 app.use(express.json());
+
+//Cookie parser
+app.use(cookieParser());
 
 //Morgan logging
 if (process.env.NODE_ENV === 'development') {
