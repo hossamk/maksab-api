@@ -41,3 +41,32 @@ exports.getEntries = asyncHandler(async (req, res, next) => {
     data: entries,
   });
 });
+
+// @desc    Add Entry for a campaign
+// @route   POST /api/v1/campaigns/:campaignId/entries
+// @access  private
+exports.createEntry = asyncHandler(async (req, res, next) => {
+  const campaign = Campaign.findById(req.params.campaign);
+
+  // Check if campaign exist
+  if (!campaign) {
+    return next(
+      new ErrorResponse(`Campaign not found with id: ${req.params.id}`, 404)
+    );
+  }
+
+  // Check if campaign is not expired
+  if (campaign.completionDate >= Date.now()) {
+    new ErrorResponse(`Campaign with id ${req.params.id} has expired`, 404);
+  }
+
+  const entry = await Entry.create({
+    campaign: req.params.id,
+    user: req.user.id,
+  });
+
+  res.status(201).json({
+    success: true,
+    data: entry,
+  });
+});

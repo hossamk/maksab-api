@@ -13,4 +13,7 @@ const EntrySchema = mongoose.Schema({
   },
 });
 
+// Prevent user from having multiple entry for the same campaign
+EntrySchema.index({ campaign: 1, user: 1 }, { unique: true });
+
 module.exports = mongoose.model('Entry', EntrySchema);
