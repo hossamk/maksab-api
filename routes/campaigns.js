@@ -7,9 +7,15 @@ const {
   campaignPhotoUpload,
 } = require('../controllers/campaigns');
 
+// Include other resource routers
+const entriesRouter = require('./entries');
+
 const router = express.Router();
 
 const { protect, authorize } = require('../middleware/auth');
+
+// Re-route into other resource routers
+router.use('/:campaignId/entries', entriesRouter);
 
 router
   .route('/')
