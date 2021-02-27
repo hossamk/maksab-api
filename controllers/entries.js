@@ -7,6 +7,17 @@ const Entry = require('../models/Entry');
 // @route   GET /api/v1/campaigns/:campaignId/entries
 // @access  private
 exports.getEntries = asyncHandler(async (req, res, next) => {
+  const campaign = await Campaign.findById(req.params.campaignId);
+
+  // Check if campaign exist
+  if (!campaign) {
+    return next(
+      new ErrorResponse(
+        `Campaign not found with id: ${req.params.campaignId}`,
+        404
+      )
+    );
+  }
   const query = { campaign: req.params.campaignId };
   // Pagination param
   const page = parseInt(req.query.page, 10) || 1;
@@ -46,22 +57,45 @@ exports.getEntries = asyncHandler(async (req, res, next) => {
 // @route   POST /api/v1/campaigns/:campaignId/entries
 // @access  private
 exports.createEntry = asyncHandler(async (req, res, next) => {
-  const campaign = Campaign.findById(req.params.campaign);
+  const campaign = await Campaign.findById(req.params.campaignId);
 
   // Check if campaign exist
   if (!campaign) {
     return next(
-      new ErrorResponse(`Campaign not found with id: ${req.params.id}`, 404)
+      new ErrorResponse(
+        `Campaign not found with id: ${req.params.campaignId}`,
+        404
+      )
     );
   }
 
   // Check if campaign is not expired
-  if (campaign.completionDate >= Date.now()) {
-    new ErrorResponse(`Campaign with id ${req.params.id} has expired`, 404);
+  if (campaign.completionDate <= Date.now()) {
+    return next(
+      new ErrorResponse(
+        `Campaign with id ${req.params.campaignId} has expired`,
+        404
+      )
+    );
+  }
+
+  //Check if user hasn't create an entry before
+  const existingEntry = await Entry.findOne({
+    campaign: req.params.campaignId,
+    user: req.user.id,
+  });
+
+  if (existingEntry) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} already has entry for campaign ${req.params.campaignId}`,
+        400
+      )
+    );
   }
 
   const entry = await Entry.create({
-    campaign: req.params.id,
+    campaign: req.params.campaignId,
     user: req.user.id,
   });
 

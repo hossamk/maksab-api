@@ -8,6 +8,7 @@
         "numberOfWinners": 1,
         "completionDate": "2021-02-21T01:09:25.368Z",
         "createdAt": "2021-02-20T22:44:35.584Z",
+        "user": "603b68ac5ea92721b8d803df",
         "__v": 0
     },
     {
@@ -19,6 +20,7 @@
         "numberOfWinners": 1,
         "completionDate": "2022-02-21T01:09:25.368Z",
         "createdAt": "2021-02-20T22:47:13.994Z",
+        "user": "603b68ac5ea92721b8d803df",
         "__v": 0
     }
 ]

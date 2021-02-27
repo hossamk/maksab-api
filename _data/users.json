@@ -1,0 +1,38 @@
+[{
+  "country": "EGYPT",
+  "gender": "MALE",
+  "role": "USER",
+  "_id": "603b68ac5ea92721b8d803df",
+  "name": "Admin",
+  "email": "admin@mksab.com",
+  "phone": "12345678",
+  "birthDate": "1992-01-01T00:00:00.000Z",
+  "password": "123456", 
+  "createdAt": "2021-02-28T09:55:56.349Z"
+},
+{
+    "country": "EGYPT",
+    "gender": "FEMALE",
+    "role": "USER",
+    "_id": "603b68b55ea92721b8d803e0",
+    "name": "test1",
+    "email": "test1@gmail.com",
+    "phone": "12345678",
+    "birthDate": "1992-02-01T00:00:00.000Z",
+    "password": "123456",
+    "createdAt": "2021-02-28T09:55:56.349Z"
+  },
+  {
+    "country": "EGYPT",
+    "gender": "OTHER",
+    "role": "USER",
+    "_id": "603b69075ea92721b8d803e1",
+    "name": "test2",
+    "email": "test2@gmail.com",
+    "phone": "12345678",
+    "birthDate": "1992-03-01T00:00:00.000Z",
+    "password": "123456",
+    "createdAt": "2021-03-28T09:55:56.349Z"
+  }
+]
+

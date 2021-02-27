@@ -6,7 +6,7 @@ const router = express.Router({ mergeParams: true });
 const { protect, authorize } = require('../middleware/auth');
 
 router
-  .route('/:campaignId/entries')
+  .route('/')
   .get(protect, authorize('ADMIN'), getEntries)
   .post(protect, authorize('USER'), createEntry);
 
