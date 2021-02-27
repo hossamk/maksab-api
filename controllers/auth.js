@@ -8,28 +8,19 @@ const sendEmail = require('../utils/sendEmail');
 // @route   POST /api/v1/auth/register
 // @access  Public
 exports.register = asyncHandler(async (req, res, next) => {
-  const {
-    name,
-    email,
-    phone,
-    country,
-    address,
-    birthDate,
-    gender,
-    password,
-  } = req.body;
+  const fieldsToAdd = {
+    name: req.body.name,
+    email: req.body.email,
+    phone: req.body.phone,
+    country: req.body.country,
+    address: req.body.address,
+    birthDate: req.body.birthDate,
+    gender: req.body.gender,
+    password: req.body.password,
+  };
 
   // Create user
-  const user = await User.create({
-    name,
-    email,
-    phone,
-    country,
-    address,
-    birthDate,
-    gender,
-    password,
-  });
+  const user = await User.create(fieldsToAdd);
 
   sendTokenResponse(user, 201, res);
 });
@@ -144,6 +135,27 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   await user.save();
 
   sendTokenResponse(user, 200, res);
+});
+
+// @desc    Update user details
+// @route   PUT /api/v1/auth/updatedetails
+// @access  Private
+exports.updateDetails = asyncHandler(async (req, res, next) => {
+  const fieldsToUpdate = {
+    name: req.body.name,
+    phone: req.body.phone,
+    gender: req.body.gender,
+    country: req.body.country,
+  };
+  const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
 });
 
 // Get token from model, create cookie and send response

@@ -10,25 +10,17 @@ const { title } = require('process');
 exports.createCampaign = asyncHandler(async (req, res, next) => {
   // Add user to req.body
   req.body.user = req.user.id;
-  const {
-    title,
-    description,
-    country,
-    numberOfWinners,
-    photo,
-    completionDate,
-    user,
-  } = req.body;
+  const fieldsToAdd = {
+    title: req.body.title,
+    description: req.body.description,
+    country: req.body.country,
+    numberOfWinners: req.body.numberOfWinners,
+    photo: req.body.photo,
+    completionDate: req.body.completionDate,
+    user: req.body.user,
+  };
 
-  const campaign = await Campaign.create({
-    title,
-    description,
-    country,
-    numberOfWinners,
-    photo,
-    completionDate,
-    user,
-  });
+  const campaign = await Campaign.create(fieldsToAdd);
 
   res.status(201).json({
     success: true,
@@ -113,24 +105,17 @@ exports.getCampaign = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/campaigns/:id
 // @access  Public
 exports.updateCampaign = asyncHandler(async (req, res, next) => {
-  const {
-    title,
-    description,
-    country,
-    numberOfWinners,
-    photo,
-    completionDate,
-  } = req.body;
+  const fieldsToUpdate = {
+    title: req.body.title,
+    description: req.body.description,
+    country: req.body.country,
+    numberOfWinners: req.body.numberOfWinners,
+    photo: req.body.photo,
+    completionDate: req.body.completionDate,
+  };
   const campaign = await Campaign.findByIdAndUpdate(
     req.params.id,
-    {
-      title,
-      description,
-      country,
-      numberOfWinners,
-      photo,
-      completionDate,
-    },
+    fieldsToUpdate,
     {
       new: true,
       runValidator: true,
