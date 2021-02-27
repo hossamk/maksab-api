@@ -7,6 +7,9 @@ const path = require('path');
 // @route   POST /api/v1/campaigns
 // @access  Public TODO: change access
 exports.createCampaign = asyncHandler(async (req, res, next) => {
+  // Add user to req.body
+  req.body.user = req.user.id;
+
   const campaign = await Campaign.create(req.body);
 
   res.status(201).json({
