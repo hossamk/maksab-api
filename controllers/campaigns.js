@@ -2,6 +2,7 @@ const asyncHandler = require('../middleware/async');
 const Campaign = require('../models/Campaign');
 const ErrorResponse = require('../utils/errorResponse');
 const path = require('path');
+const { title } = require('process');
 
 // @desc    Create a campaign
 // @route   POST /api/v1/campaigns
@@ -9,8 +10,25 @@ const path = require('path');
 exports.createCampaign = asyncHandler(async (req, res, next) => {
   // Add user to req.body
   req.body.user = req.user.id;
+  const {
+    title,
+    description,
+    country,
+    numberOfWinners,
+    photo,
+    completionDate,
+    user,
+  } = req.body;
 
-  const campaign = await Campaign.create(req.body);
+  const campaign = await Campaign.create({
+    title,
+    description,
+    country,
+    numberOfWinners,
+    photo,
+    completionDate,
+    user,
+  });
 
   res.status(201).json({
     success: true,
@@ -95,10 +113,29 @@ exports.getCampaign = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/campaigns/:id
 // @access  Public
 exports.updateCampaign = asyncHandler(async (req, res, next) => {
-  const campaign = await Campaign.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidator: true,
-  });
+  const {
+    title,
+    description,
+    country,
+    numberOfWinners,
+    photo,
+    completionDate,
+  } = req.body;
+  const campaign = await Campaign.findByIdAndUpdate(
+    req.params.id,
+    {
+      title,
+      description,
+      country,
+      numberOfWinners,
+      photo,
+      completionDate,
+    },
+    {
+      new: true,
+      runValidator: true,
+    }
+  );
 
   if (!campaign) {
     return next(
