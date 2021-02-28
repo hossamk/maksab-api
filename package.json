@@ -29,7 +29,8 @@
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.5",
     "nodemailer": "^6.5.0",
-    "express-mongo-sanitize": "^2.0.2"
+    "express-mongo-sanitize": "^2.0.2",
+    "helmet": "^4.4.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
