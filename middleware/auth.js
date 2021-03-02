@@ -2,6 +2,10 @@ const jwt = require('jsonwebtoken');
 const asyncHandler = require('./async');
 const ErrorResponse = require('../utils/errorResponse');
 const User = require('../models/User');
+const fs = require('fs');
+
+const pathToKey = `${__dirname}/../id_rsa_pub.pem`;
+const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
 
 // Protect routes
 exports.protect = asyncHandler(async (req, res, next) => {
@@ -22,7 +26,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
   try {
     // Verify token
-    const decode = jwt.verify(token, process.env.JWT_SECRET);
+    const decode = jwt.verify(token, PUB_KEY);
 
     req.user = await User.findById(decode.id);
     next();

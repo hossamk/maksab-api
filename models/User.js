@@ -2,6 +2,10 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+
+const pathToKey = `${__dirname}/../id_rsa_priv.pem`;
+const PRIV_KEY = fs.readFileSync(pathToKey, 'utf8');
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -78,7 +82,7 @@ UserSchema.pre('save', async function (next) {
 
 // Sign JWT and return
 UserSchema.methods.getSignedJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: this._id }, PRIV_KEY, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };
