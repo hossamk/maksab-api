@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const asyncHandler = require('../middleware/async');
+const { asyncHandler } = require('../middleware/async');
 const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const sendEmail = require('../utils/sendEmail');
@@ -11,18 +11,15 @@ exports.register = asyncHandler(async (req, res, next) => {
   const fieldsToAdd = {
     name: req.body.name,
     email: req.body.email,
-    phone: req.body.phone,
-    country: req.body.country,
-    address: req.body.address,
-    birthDate: req.body.birthDate,
-    gender: req.body.gender,
     password: req.body.password,
   };
 
   // Create user
   const user = await User.create(fieldsToAdd);
 
-  sendTokenResponse(user, 201, res);
+  res.status(201).json({
+    success: true,
+  });
 });
 
 // @desc    Login user
@@ -134,7 +131,86 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
   await user.save();
 
-  sendTokenResponse(user, 200, res);
+  res.status(200).json({
+    success: true,
+  });
+});
+
+// @desc    Confirm user email.
+// @route   POST /api/v1/auth/confirmemail
+// @access  Public
+exports.sendConfrimEmail = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new ErrorResponse('There is no user with that email', 404));
+  }
+
+  if (user.status !== 'PENDING') {
+    return next(new ErrorResponse('This email already confirmed', 404));
+  }
+
+  // Get confirm token
+  const confirmToken = user.getConfirmEmailToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  // Create confirm email url
+  const confirmUrl = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/auth/confirmemail/${confirmToken}`;
+
+  // message
+  const message = `Congratultaion on your registeration. To confirm your email please make a get request to:\n ${resetUrl}`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Email confirmation',
+      message,
+    });
+    res.status(200).json({
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    user.confirmEmailToken = undefined;
+    user.confirmEmailExpire = undefined;
+
+    await user.save({ validateBeforeSave: false });
+
+    return next(new ErrorResponse('Confirm email can not be sent', 500));
+  }
+});
+
+// @desc    confirm email
+// @route   GET /api/v1/auth/confirmemail/:confirmtoken
+// @access  Public
+exports.confirmEmail = asyncHandler(async (req, res, next) => {
+  // Get hashed token
+  const confirmEmailToken = crypto
+    .createHash('sha256')
+    .update(req.params.confirmtoken)
+    .digest('hex');
+
+  const user = await User.findOne({
+    confirmEmailToken,
+    confirmEmailExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new ErrorResponse('Invalid token', 400));
+  }
+
+  // Set user status
+  user.status = 'INCOMPLETE';
+  user.confirmEmailToken = undefined;
+  user.confirmEmailExpire = undefined;
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+  });
 });
 
 // @desc    Update user details
@@ -146,6 +222,8 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
     phone: req.body.phone,
     gender: req.body.gender,
     country: req.body.country,
+    address: req.body.address,
+    birthDate: req.body.birthDate,
   };
   const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
     new: true,
@@ -188,6 +266,10 @@ exports.logout = asyncHandler(async (req, res, next) => {
     data: {},
   });
 });
+
+exports.generateSocialLoginToken = (req, res, next) => {
+  sendTokenResponse(req.user, 200, res);
+};
 
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {

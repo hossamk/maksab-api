@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const asyncHandler = require('./async');
+const { asyncHandler } = require('./async');
 const ErrorResponse = require('../utils/errorResponse');
 const User = require('../models/User');
 const fs = require('fs');
@@ -26,11 +26,15 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
   try {
     // Verify token
-    const decode = jwt.verify(token, PUB_KEY);
+    const decode = jwt.verify(token, PUB_KEY, {
+      expiresIn: process.env.JWT_EXPIRE,
+      algorithm: 'RS256',
+    });
 
     req.user = await User.findById(decode.id);
     next();
   } catch (err) {
+    console.log(err);
     return next(new ErrorResponse('Not authorized access to this route', 401));
   }
 });
@@ -42,6 +46,21 @@ exports.authorize = (...roles) => {
       return next(
         new ErrorResponse(
           `User role ${req.user.role} is not authorized access to this route`,
+          403
+        )
+      );
+    }
+    next();
+  };
+};
+
+// Grant access user in specific status
+exports.authorizeStatus = (...statuses) => {
+  return (req, res, next) => {
+    if (!statuses.includes(req.user.status)) {
+      return next(
+        new ErrorResponse(
+          `User status ${req.user.status} is not authorized access to this route`,
           403
         )
       );

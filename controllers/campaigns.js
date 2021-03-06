@@ -1,4 +1,4 @@
-const asyncHandler = require('../middleware/async');
+const { asyncHandler } = require('../middleware/async');
 const Campaign = require('../models/Campaign');
 const ErrorResponse = require('../utils/errorResponse');
 const path = require('path');
