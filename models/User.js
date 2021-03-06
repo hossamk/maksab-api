@@ -23,9 +23,24 @@ const UserSchema = new mongoose.Schema({
       'Invalid email formate',
     ],
   },
+  facebookId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   phone: {
     type: String,
-    required: [true, 'Phone is required'],
+    required: [
+      function () {
+        return this.status === 'ACTIVE';
+      },
+      'Phone is required',
+    ],
     match: [/^\d*$/, 'Invalid phone formate'],
     maxlength: [20, 'Invalid phone more than 20'],
     minlength: [5, 'Invalid phone less than 5 digits'],
@@ -33,7 +48,12 @@ const UserSchema = new mongoose.Schema({
   country: {
     type: String,
     enum: ['EGYPT'],
-    required: [true, 'Country is required'],
+    required: [
+      function () {
+        return this.status === 'ACTIVE';
+      },
+      'Country is required',
+    ],
     default: 'EGYPT',
   },
   address: {
@@ -43,18 +63,35 @@ const UserSchema = new mongoose.Schema({
   },
   birthDate: {
     type: Date,
-    required: [true, 'Birth Date is required'],
+    required: [
+      function () {
+        return this.status === 'ACTIVE';
+      },
+      'Birth Date is required',
+    ],
   },
   gender: {
     type: String,
-    required: [true, 'Gender is required'],
+    required: [
+      function () {
+        return this.status === 'ACTIVE';
+      },
+      'Gender is required',
+    ],
     enum: ['FEMALE', 'MALE', 'OTHER'],
     default: 'OTHER',
   },
   role: {
     type: String,
     enum: ['USER'],
+    required: [true, 'Role is required'],
     default: 'USER',
+  },
+  status: {
+    type: String,
+    enum: ['PENDING', 'INCOMPLETE', 'ACTIVE'],
+    required: [true, 'Status is required'],
+    default: 'PENDING',
   },
   password: {
     type: String,
@@ -64,6 +101,8 @@ const UserSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  confirmEmailToken: String,
+  confirmEmailExpire: Date,
   createdAt: {
     type: Date,
     default: Date.now,
@@ -84,6 +123,7 @@ UserSchema.pre('save', async function (next) {
 UserSchema.methods.getSignedJwtToken = function () {
   return jwt.sign({ id: this._id }, PRIV_KEY, {
     expiresIn: process.env.JWT_EXPIRE,
+    algorithm: 'RS256',
   });
 };
 
@@ -107,5 +147,22 @@ UserSchema.methods.getResetPasswordToken = function () {
   this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
+};
+
+// Generate and hash email confirmation token
+UserSchema.methods.getConfirmEmailToken = function () {
+  //Generate token
+  const confirmToken = crypto.randomBytes(20).toString('hex');
+
+  // Hash token and set to confirmEmailToken field
+  this.confirmEmailToken = crypto
+    .createHash('sha256')
+    .update(confirmToken)
+    .digest('hex');
+
+  // Set expire
+  this.confirmEmailExpire = Date.now() + 24 * 60 * 60 * 1000;
+
+  return confirmToken;
 };
 module.exports = mongoose.model('User', UserSchema);

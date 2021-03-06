@@ -15,12 +15,12 @@ const { CAMPAIGNS_ROUTE, AUTH_ROUTE } = require('./constants');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
 
+// Load env variables
+dotenv.config({ path: './config/config.env' });
+
 // Route files
 const campaigns = require('./routes/campaigns');
 const auth = require('./routes/auth');
-
-// Load env variables
-dotenv.config({ path: './config/config.env' });
 
 // Connect to database
 connectDB();
