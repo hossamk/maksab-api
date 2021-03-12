@@ -16,8 +16,12 @@ exports.register = asyncHandler(async (req, res, next) => {
 
   // Create user
   const user = await User.create(fieldsToAdd);
-
-  sendConfirmationEmail(user, 201, req, res, next);
+  if ((error = sendConfirmationEmail(user, req))) {
+    next(error);
+  }
+  res.status(201).json({
+    success: true,
+  });
 });
 
 // @desc    Login user
@@ -147,7 +151,13 @@ exports.sendConfrimEmail = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('This email already confirmed', 404));
   }
 
-  sendConfirmationEmail(user, 200, req, res, next);
+  if ((error = sendConfirmationEmail(user, req))) {
+    next(error);
+  }
+
+  res.status(200).json({
+    success: true,
+  });
 });
 
 // @desc    confirm email
@@ -259,7 +269,7 @@ exports.generateSocialLoginToken = (req, res, next) => {
 };
 
 // Send confirmation email.
-const sendConfirmationEmail = async (user, statusCode, req, res, next) => {
+const sendConfirmationEmail = async (user, req) => {
   // Get confirm token
   const confirmToken = user.getConfirmEmailToken();
 
@@ -271,16 +281,13 @@ const sendConfirmationEmail = async (user, statusCode, req, res, next) => {
   )}/api/v1/auth/confirmemail/${confirmToken}`;
 
   // message
-  const message = `Congratultaion on your registeration. To confirm your email please make a get request to:\n ${resetUrl}`;
+  const message = `Congratultaion on your registeration. To confirm your email please make a get request to:\n ${confirmUrl}`;
 
   try {
     await sendEmail({
       email: user.email,
       subject: 'Email confirmation',
       message,
-    });
-    res.status(statusCode).json({
-      success: true,
     });
   } catch (err) {
     console.log(err);
@@ -289,7 +296,7 @@ const sendConfirmationEmail = async (user, statusCode, req, res, next) => {
 
     await user.save({ validateBeforeSave: false });
 
-    return next(new ErrorResponse('Confirm email can not be sent', 500));
+    return new ErrorResponse('Confirm email can not be sent', 500);
   }
 };
 

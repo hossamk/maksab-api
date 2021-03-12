@@ -8,7 +8,8 @@
   "phone": "12345678",
   "birthDate": "1992-01-01T00:00:00.000Z",
   "password": "123456", 
-  "createdAt": "2021-02-28T09:55:56.349Z"
+  "createdAt": "2021-02-28T09:55:56.349Z",
+  "status": "ACTIVE"
 },
 {
     "country": "EGYPT",
@@ -20,7 +21,30 @@
     "phone": "12345678",
     "birthDate": "1992-02-01T00:00:00.000Z",
     "password": "123456",
-    "createdAt": "2021-02-28T09:55:56.349Z"
+    "createdAt": "2021-02-28T09:55:56.349Z",
+    "status": "ACTIVE"
+  },
+  {
+    "country": "EGYPT",
+    "gender": "OTHER",
+    "role": "USER",
+    "status": "PENDING",
+    "_id": "604ba48bbdc8d52df0ce7f14",
+    "name": "test2",
+    "email": "test2@gmail.com",
+    "password": "123456",
+    "createdAt": "2021-03-12T17:27:39.448Z"
+  },
+  {
+    "country": "EGYPT",
+    "gender": "OTHER",
+    "role": "USER",
+    "status": "INCOMPLETE",
+    "_id": "604ba6381ffdfe03b49463b0",
+    "name": "test3",
+    "email": "test3@gmail.com",
+    "password": "123456",
+    "createdAt": "2021-03-12T17:27:39.448Z"
   },
   {
     "country": "EGYPT",
