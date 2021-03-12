@@ -24,7 +24,8 @@ configureFacebook(passport);
 const { protect } = require('../middleware/auth');
 
 router.route('/register').post(register);
-router.route('/confirmemail').post(sendConfrimEmail).get(confirmEmail);
+router.route('/confirmemail').post(sendConfrimEmail);
+router.route('/confirmemail/:confirmtoken').get(confirmEmail);
 router.route('/login').post(login);
 router.route('/facebook').get(
   passport.authenticate('facebook', {
