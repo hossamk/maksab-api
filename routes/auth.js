@@ -30,7 +30,6 @@ router.route('/login').post(login);
 router.route('/facebook').get(
   passport.authenticate('facebook', {
     session: false,
-    scope: ['email', 'displayName'],
   })
 );
 router.route('/google').get(
@@ -50,7 +49,6 @@ router.route('/googlecallback').get(
 
 router.route('/facebookcallback').get(
   passport.authenticate('facebook', {
-    scope: ['email', 'displayName'],
     session: false,
   }),
   generateSocialLoginToken

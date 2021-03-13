@@ -15,26 +15,23 @@ exports.configureGoogle = (passport) => {
         profileFields: ['id', 'displayName', 'email'],
       },
       passportAsyncHandler(async (accessToken, refreshToken, profile, done) => {
-        let user = await User.findOne({ googleId: profile.id });
+        let user = await User.findOne({ googleId: profile._json.sub });
         // User with same google id exist just need to login
         if (user) {
           return done(null, user);
         }
-        profile.email = profile._json.email_verified
-          ? profile._json.email
-          : undefined;
         // Google user with no email aren't allowed to register
-        if (!profile.email) {
+        if (!profile._json.email_verified || !profile._json.email) {
           return done(new ErrorResponse('This accont has no email', 400));
         }
 
         // check if user with this email exist
-        user = await User.findOne({ email: profile.email });
+        user = await User.findOne({ email: profile._json.email });
 
         if (user) {
           // User with the same email exist. If email not confirmed mark the user as INCOMPLETE.
           // if this is an ACTIVE user just attatch googleId to it.
-          user.googleId = profile.id;
+          user.googleId = profile._json.sub;
           if (user.status == 'PENDING') {
             user.status = 'INCOMPLETE';
           }
@@ -42,9 +39,9 @@ exports.configureGoogle = (passport) => {
         } else {
           // create user
           user = await User.create({
-            name: profile.displayName,
-            email: profile.email,
-            googleId: profile.id,
+            name: profile._json.name,
+            email: profile._json.email,
+            googleId: profile._json.sub,
             password: crypto.randomBytes(15).toString('hex'),
             status: 'INCOMPLETE',
           });
@@ -62,28 +59,27 @@ exports.configureFacebook = (passport) => {
       {
         clientID: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: 'http://localhost:5000/api/v1/auth/callback',
+        callbackURL: 'http://localhost:5000/api/v1/auth/facebookcallback',
         profileFields: ['id', 'displayName', 'email'],
       },
       passportAsyncHandler(async (accessToken, refreshToken, profile, done) => {
-        let user = await User.findOne({ facebookId: profile.id });
+        let user = await User.findOne({ facebookId: profile._json.id });
         // User with same facebook id exist just need to login
         if (user) {
           return done(null, user);
         }
-
         // Facebook user with no email aren't allowed to register
-        if (!profile.email) {
+        if (!profile._json.email) {
           return done(new ErrorResponse('This accont has no email', 400));
         }
 
         // check if user with this email exist
-        user = await User.findOne({ email: profile.email });
+        user = await User.findOne({ email: profile._json.email });
 
         if (user) {
           // User with the same email exist. If email not confirmed mark the user as INCOMPLETE.
           // if this is an ACTIVE user just attatch facebookId to it.
-          user.facebookId = profile.id;
+          user.facebookId = profile._json.id;
           if (user.status == 'PENDING') {
             user.status = 'INCOMPLETE';
           }
@@ -91,9 +87,9 @@ exports.configureFacebook = (passport) => {
         } else {
           // create user
           user = await User.create({
-            name: profile.displayName,
-            email: profile.email,
-            facebookId: profile.id,
+            name: profile._json.name,
+            email: profile._json.email,
+            facebookId: profile._json.id,
             password: crypto.randomBytes(15).toString('hex'),
             status: 'INCOMPLETE',
           });
