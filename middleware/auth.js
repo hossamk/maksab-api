@@ -32,6 +32,9 @@ exports.protect = asyncHandler(async (req, res, next) => {
     });
 
     req.user = await User.findById(decode.id);
+    if (!req.user) {
+      return next(new ErrorResponse('Invalid authentication token', 401));
+    }
     next();
   } catch (err) {
     return next(new ErrorResponse('Not authorized access to this route', 401));
