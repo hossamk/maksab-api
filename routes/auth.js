@@ -33,15 +33,8 @@ router.route('/facebook').post(
   }),
   generateSocialLoginToken
 );
-router.route('/google').get(
-  passport.authenticate('google', {
-    scope: ['profile', 'email'],
-    session: false,
-  })
-);
-
-router.route('/googlecallback').get(
-  passport.authenticate('google', {
+router.route('/google').post(
+  passport.authenticate('google-token', {
     scope: ['profile', 'email'],
     session: false,
   }),

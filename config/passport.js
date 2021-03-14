@@ -1,4 +1,4 @@
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const GoogleTokenStrategy = require('passport-google-token').Strategy;
 const FacebookTokenStrategy = require('passport-facebook-token');
 const User = require('../models/User');
 const crypto = require('crypto');
@@ -7,21 +7,21 @@ const ErrorResponse = require('../utils/errorResponse');
 
 exports.configureGoogle = (passport) => {
   passport.use(
-    new GoogleStrategy(
+    new GoogleTokenStrategy(
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: 'http://localhost:5000/api/v1/auth/googlecallback',
         profileFields: ['id', 'displayName', 'email'],
       },
       passportAsyncHandler(async (accessToken, refreshToken, profile, done) => {
-        let user = await User.findOne({ googleId: profile._json.sub });
+        let user = await User.findOne({ googleId: profile._json.id });
         // User with same google id exist just need to login
         if (user) {
           return done(null, user);
         }
+
         // Google user with no email aren't allowed to register
-        if (!profile._json.email_verified || !profile._json.email) {
+        if (!profile._json.verified_email || !profile._json.email) {
           return done(new ErrorResponse('This accont has no email', 400));
         }
 
@@ -31,7 +31,7 @@ exports.configureGoogle = (passport) => {
         if (user) {
           // User with the same email exist. If email not confirmed mark the user as INCOMPLETE.
           // if this is an ACTIVE user just attatch googleId to it.
-          user.googleId = profile._json.sub;
+          user.googleId = profile._json.id;
           if (user.status == 'PENDING') {
             user.status = 'INCOMPLETE';
           }
@@ -41,7 +41,7 @@ exports.configureGoogle = (passport) => {
           user = await User.create({
             name: profile._json.name,
             email: profile._json.email,
-            googleId: profile._json.sub,
+            googleId: profile._json.id,
             password: crypto.randomBytes(15).toString('hex'),
             status: 'INCOMPLETE',
           });
