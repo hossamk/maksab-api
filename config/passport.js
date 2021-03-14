@@ -45,6 +45,7 @@ exports.configureGoogle = (passport) => {
             password: crypto.randomBytes(15).toString('hex'),
             status: 'INCOMPLETE',
           });
+          user.password = undefined;
         }
 
         return done(null, user);
@@ -92,6 +93,7 @@ exports.configureFacebook = (passport) => {
             password: crypto.randomBytes(15).toString('hex'),
             status: 'INCOMPLETE',
           });
+          user.password = undefined;
         }
 
         return done(null, user);
