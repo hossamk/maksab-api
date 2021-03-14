@@ -21,6 +21,11 @@ const errorHandler = (err, req, res, next) => {
     error = new ErrorResponse(message, 400);
   }
 
+  // Passport Outh error
+  if (err.name === 'InternalOAuthError') {
+    error = new ErrorResponse(err.message, err.oauthError.statusCode);
+  }
+
   res.status(error.statusCode || 500).json({
     success: false,
     error: error.message || 'Server Error',
