@@ -27,10 +27,11 @@ router.route('/register').post(register);
 router.route('/confirmemail').post(sendConfrimEmail);
 router.route('/confirmemail/:confirmtoken').get(confirmEmail);
 router.route('/login').post(login);
-router.route('/facebook').get(
-  passport.authenticate('facebook', {
+router.route('/facebook').post(
+  passport.authenticate('facebook-token', {
     session: false,
-  })
+  }),
+  generateSocialLoginToken
 );
 router.route('/google').get(
   passport.authenticate('google', {
@@ -42,13 +43,6 @@ router.route('/google').get(
 router.route('/googlecallback').get(
   passport.authenticate('google', {
     scope: ['profile', 'email'],
-    session: false,
-  }),
-  generateSocialLoginToken
-);
-
-router.route('/facebookcallback').get(
-  passport.authenticate('facebook', {
     session: false,
   }),
   generateSocialLoginToken

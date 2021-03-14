@@ -1,5 +1,5 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const FacebookStrategy = require('passport-facebook').Strategy;
+const FacebookTokenStrategy = require('passport-facebook-token');
 const User = require('../models/User');
 const crypto = require('crypto');
 const { passportAsyncHandler } = require('../middleware/async');
@@ -55,11 +55,10 @@ exports.configureGoogle = (passport) => {
 
 exports.configureFacebook = (passport) => {
   passport.use(
-    new FacebookStrategy(
+    new FacebookTokenStrategy(
       {
         clientID: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: 'http://localhost:5000/api/v1/auth/facebookcallback',
         profileFields: ['id', 'displayName', 'email'],
       },
       passportAsyncHandler(async (accessToken, refreshToken, profile, done) => {
