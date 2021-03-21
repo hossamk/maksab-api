@@ -86,6 +86,7 @@ exports.configureFacebook = (passport) => {
             status: 'INCOMPLETE',
           });
           user.password = undefined;
+          return done(null, user);
         }
 
         // check if user with this email exist
