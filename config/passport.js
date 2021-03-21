@@ -20,9 +20,17 @@ exports.configureGoogle = (passport) => {
           return done(null, user);
         }
 
-        // Google user with no email aren't allowed to register
+        // Google user with no email just create an account
         if (!profile._json.verified_email || !profile._json.email) {
-          return done(new ErrorResponse('This accont has no email', 400));
+          // create user
+          user = await User.create({
+            name: profile._json.name,
+            googleId: profile._json.id,
+            password: crypto.randomBytes(15).toString('hex'),
+            status: 'INCOMPLETE',
+          });
+          user.password = undefined;
+          return done(null, user);
         }
 
         // check if user with this email exist
@@ -68,9 +76,17 @@ exports.configureFacebook = (passport) => {
         if (user) {
           return done(null, user);
         }
-        // Facebook user with no email aren't allowed to register
+        // Facebook user with no email, just create account
         if (!profile._json.email) {
-          return done(new ErrorResponse('This accont has no email', 400));
+          // create user
+          user = await User.create({
+            name: profile._json.name,
+            email: profile._json.email,
+            facebookId: profile._json.id,
+            password: crypto.randomBytes(15).toString('hex'),
+            status: 'INCOMPLETE',
+          });
+          user.password = undefined;
         }
 
         // check if user with this email exist
