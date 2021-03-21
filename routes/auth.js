@@ -23,10 +23,12 @@ configureFacebook(passport);
 
 const { protect } = require('../middleware/auth');
 
-router.route('/register').post(register);
-router.route('/confirmemail').post(sendConfrimEmail);
-router.route('/confirmemail/:confirmtoken').get(confirmEmail);
-router.route('/login').post(login);
+// Disable local register and login.
+// router.route('/register').post(register);
+// router.route('/confirmemail').post(sendConfrimEmail);
+// router.route('/confirmemail/:confirmtoken').get(confirmEmail);
+// router.route('/login').post(login);
+
 router.route('/facebook').post(
   passport.authenticate('facebook-token', {
     session: false,
@@ -44,8 +46,9 @@ router.route('/google').post(
 router.route('/logout').get(logout);
 router.route('/me').get(protect, getMe);
 router.route('/updatedetails').put(protect, updateDetails);
-router.route('/updatepassword').put(protect, updatePassword);
-router.route('/forgotpassword').post(forgotPassword);
-router.route('/resetpassword/:resettoken').put(resetPassword);
+// Disable local register and login.
+// router.route('/updatepassword').put(protect, updatePassword);
+// router.route('/forgotpassword').post(forgotPassword);
+// router.route('/resetpassword/:resettoken').put(resetPassword);
 
 module.exports = router;
