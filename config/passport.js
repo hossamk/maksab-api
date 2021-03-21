@@ -81,7 +81,6 @@ exports.configureFacebook = (passport) => {
           // create user
           user = await User.create({
             name: profile._json.name,
-            email: profile._json.email,
             facebookId: profile._json.id,
             password: crypto.randomBytes(15).toString('hex'),
             status: 'INCOMPLETE',
